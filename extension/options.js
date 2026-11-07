@@ -8,7 +8,7 @@ const testResult = document.getElementById('testResult');
 
 // Load stored settings
 chrome.storage.local.get(['serverUrl', 'deviceName', 'autoOpen'], (res) => {
-  serverUrlInput.value = res.serverUrl || 'ws://localhost:3000';
+  serverUrlInput.value = res.serverUrl || 'https://sharink.vercel.app';
   deviceNameInput.value = res.deviceName || 'Browser PC';
   autoOpenInput.checked = !!res.autoOpen;
 });
@@ -20,7 +20,7 @@ btnSave.addEventListener('click', () => {
   const autoOpen = autoOpenInput.checked;
 
   if (!url) {
-    url = 'ws://localhost:3000';
+    url = 'https://sharink.vercel.app';
     serverUrlInput.value = url;
   }
 

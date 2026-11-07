@@ -7,8 +7,8 @@ const notificationMap = new Map(); // id -> url
 
 // Default configuration
 const DEFAULT_CONFIG = {
-  serverUrl: 'ws://localhost:3000',
-  pairCode: '',
+  serverUrl: 'https://sharink.vercel.app',
+  pairCode: 'FAHRI-JIHAN',
   deviceName: 'Browser PC',
   autoOpen: false,
   soundAlert: true
@@ -19,11 +19,20 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.get(Object.keys(DEFAULT_CONFIG), (res) => {
     const toSet = {};
     for (const key in DEFAULT_CONFIG) {
-      if (res[key] === undefined) toSet[key] = DEFAULT_CONFIG[key];
+      if (res[key] === undefined) {
+        toSet[key] = DEFAULT_CONFIG[key];
+      }
     }
-    if (Object.keys(toSet).length > 0) {
-      chrome.storage.local.set(toSet);
+    // Auto upgrade legacy localhost url to official Vercel server
+    if (!res.serverUrl || res.serverUrl === 'ws://localhost:3000') {
+      toSet.serverUrl = 'https://sharink.vercel.app';
     }
+    if (!res.pairCode) {
+      toSet.pairCode = 'FAHRI-JIHAN';
+    }
+    chrome.storage.local.set(toSet, () => {
+      setupConnection();
+    });
   });
 
   // Setup Context Menus
@@ -124,8 +133,8 @@ function startHttpPolling(serverUrl, pairCode) {
     socket = null;
   }
 
-  chrome.action.setBadgeText({ text: 'SYNC' });
-  chrome.action.setBadgeBackgroundColor({ color: '#3b82f6' });
+  chrome.action.setBadgeText({ text: 'LIVE' });
+  chrome.action.setBadgeBackgroundColor({ color: '#10b981' });
 
   const poll = async () => {
     try {

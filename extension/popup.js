@@ -111,10 +111,10 @@ async function init() {
     if (status) {
       if (status.wsConnected) {
         statusDot.className = 'status-indicator online';
-        connectionBadge.textContent = 'Online (WS)';
+        connectionBadge.textContent = 'WS Online';
       } else if (status.pollingActive) {
-        statusDot.className = 'status-indicator sync';
-        connectionBadge.textContent = 'Sync Aktif';
+        statusDot.className = 'status-indicator online';
+        connectionBadge.textContent = 'Vercel Online';
       } else {
         statusDot.className = 'status-indicator offline';
         connectionBadge.textContent = 'Offline';

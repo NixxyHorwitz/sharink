@@ -47,20 +47,26 @@ sharink/
 
 ---
 
+## 🌐 Server Default & Link Download
+
+- **Server Aktif (Vercel):** [https://sharink.vercel.app/](https://sharink.vercel.app/) (Telah disetel sebagai default di ekstensi).
+- **Download Langsung (.zip):** Buka [https://sharink.vercel.app/](https://sharink.vercel.app/) dan klik tombol *"Unduh Ekstensi Browser"* untuk mendapatkan file `.zip` siap pakai.
+
+---
+
 ## 🚀 1. Cara Pasang Ekstensi di Browser (Chrome / Edge / Brave)
 
-1. Buka browser di Laptop / PC Anda.
+1. Unduh ekstensi:
+   - Dari web: Unduh dan ekstrak file `.zip` dari [https://sharink.vercel.app/](https://sharink.vercel.app/)
+   - Atau dari folder lokal ini: folder `extension` di `C:\laragon\www\sharink\extension`
 2. Buka menu ekstensi:
    - **Google Chrome:** buka `chrome://extensions`
    - **Microsoft Edge:** buka `edge://extensions`
    - **Brave Browser:** buka `brave://extensions`
 3. Aktifkan sakelar **Developer mode** (Mode pengembang) di sudut kanan atas.
 4. Klik tombol **Load unpacked** (Muat yang belum dibongkar) di kiri atas.
-5. Pilih folder:
-   ```text
-   C:\laragon\www\sharink\extension
-   ```
-6. Ekstensi **Sharink** berhasil dipasang! Sematkan (pin) icon Sharink di toolbar browser Anda.
+5. Pilih folder `extension`.
+6. Ekstensi **Sharink** berhasil dipasang! Pair Code default sudah otomatis `FAHRI-JIHAN` dan server sudah terhubung ke `https://sharink.vercel.app/`.
 
 ---
 
