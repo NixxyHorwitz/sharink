@@ -21,6 +21,41 @@ const historyList = document.getElementById('historyList');
 const receivedCount = document.getElementById('receivedCount');
 const sentCount = document.getElementById('sentCount');
 const heartsContainer = document.getElementById('heartsContainer');
+const bannerImg = document.getElementById('bannerImg');
+const avatarPhotos = document.querySelectorAll('.avatar-photo');
+
+// Banner image toggle / interactive switch
+if (bannerImg) {
+  const bannerImages = ['couple.jpg', 'jihan.jpg', 'fahri.jpg'];
+  let bannerIdx = 0;
+
+  bannerImg.style.cursor = 'pointer';
+  bannerImg.title = 'Klik untuk ganti foto banner 💕';
+
+  bannerImg.addEventListener('click', () => {
+    bannerIdx = (bannerIdx + 1) % bannerImages.length;
+    bannerImg.style.opacity = '0.5';
+    setTimeout(() => {
+      bannerImg.src = bannerImages[bannerIdx];
+      bannerImg.style.opacity = '1';
+    }, 120);
+    triggerHeartBurst();
+  });
+
+  avatarPhotos.forEach((img) => {
+    img.style.cursor = 'pointer';
+    img.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const targetSrc = img.getAttribute('src');
+      bannerImg.style.opacity = '0.5';
+      setTimeout(() => {
+        bannerImg.src = targetSrc;
+        bannerImg.style.opacity = '1';
+      }, 120);
+      triggerHeartBurst();
+    });
+  });
+}
 
 // Heart burst animation
 function triggerHeartBurst() {

@@ -7,27 +7,45 @@
 </head>
 <body>
   <div class="popup-container">
-    <!-- Romantic Hero Header with Fahri & Jihan Photo -->
-    <header class="couple-hero">
-      <div class="couple-avatar-wrapper">
-        <img src="couple.jpg" alt="Fahri & Jihan" class="couple-avatar">
-        <span class="heart-badge" title="Forever with love">❤️</span>
-      </div>
-      <div class="couple-meta">
-        <div class="couple-title">
-          <span>Fahri</span>
-          <span class="heart-pulse">❤️</span>
-          <span>Jihan</span>
+    <!-- Big Romantic Banner with Couple Photo -->
+    <div class="banner-wrapper">
+      <div class="romantic-banner">
+        <img src="couple.jpg" alt="Fahri & Jihan" id="bannerImg" class="banner-image">
+        <div class="banner-overlay"></div>
+        
+        <!-- Top bar inside banner -->
+        <div class="banner-top-bar">
+          <div class="banner-badge">
+            <span class="status-dot-pulse" id="statusDot"></span>
+            <span id="connectionBadge" class="banner-status-text">Online</span>
+          </div>
+          <button id="btnOpenOptions" class="btn-glass" title="Pengaturan Server">⚙️</button>
         </div>
-        <div class="connection-status-row">
-          <span class="status-indicator" id="statusDot"></span>
-          <span id="connectionBadge" class="status-label">Menghubungkan...</span>
-        </div>
-      </div>
-      <button id="btnOpenOptions" class="btn-icon" title="Pengaturan Server & Perangkat">⚙️</button>
-    </header>
 
-    <!-- Floating hearts animation container -->
+        <!-- Banner bottom title -->
+        <div class="banner-caption">
+          <div class="couple-names">Fahri <span class="heart-anim">❤️</span> Jihan</div>
+          <div class="couple-sub">Selalu terhubung, di mana pun berada ✨</div>
+        </div>
+      </div>
+
+      <!-- Overlapping Dual Avatars (Fahri & Jihan) -->
+      <div class="avatars-overlap-row">
+        <div class="avatar-box">
+          <img src="fahri.jpg" alt="Fahri" class="avatar-photo" title="Fahri">
+          <span class="avatar-name">Fahri</span>
+        </div>
+        <div class="avatar-heart-bridge">
+          <span class="heart-pulse-icon">💖</span>
+        </div>
+        <div class="avatar-box">
+          <img src="jihan.jpg" alt="Jihan" class="avatar-photo" title="Jihan">
+          <span class="avatar-name">Jihan</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating hearts animation canvas -->
     <div id="heartsContainer" class="hearts-container"></div>
 
     <!-- Active Tab Send Card -->
@@ -94,7 +112,7 @@
 
     <!-- Sweet Micro Footer -->
     <footer class="micro-footer">
-      <span>Sharink &bull; Selalu terhubung dengan cinta ✨</span>
+      <span>Sharink &bull; Dibuat khusus dengan ❤️ untuk Fahri &amp; Jihan</span>
     </footer>
   </div>
 

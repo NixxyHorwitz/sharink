@@ -17,6 +17,47 @@ const statusText = document.getElementById('statusText');
 const deviceCount = document.getElementById('deviceCount');
 const linksList = document.getElementById('linksList');
 const autoOpenToggle = document.getElementById('autoOpenToggle');
+const bannerImg = document.getElementById('bannerImg');
+const avatarFahri = document.getElementById('avatarFahri');
+const avatarJihan = document.getElementById('avatarJihan');
+
+// Interactive banner photo switcher
+if (bannerImg) {
+  const images = ['couple.jpg', 'jihan.jpg', 'fahri.jpg'];
+  let currentIdx = 0;
+
+  bannerImg.addEventListener('click', () => {
+    currentIdx = (currentIdx + 1) % images.length;
+    bannerImg.style.opacity = '0.5';
+    setTimeout(() => {
+      bannerImg.src = images[currentIdx];
+      bannerImg.style.opacity = '1';
+    }, 120);
+    playBeep();
+  });
+
+  if (avatarFahri) {
+    avatarFahri.addEventListener('click', () => {
+      bannerImg.style.opacity = '0.5';
+      setTimeout(() => {
+        bannerImg.src = 'fahri.jpg';
+        bannerImg.style.opacity = '1';
+      }, 120);
+      playBeep();
+    });
+  }
+
+  if (avatarJihan) {
+    avatarJihan.addEventListener('click', () => {
+      bannerImg.style.opacity = '0.5';
+      setTimeout(() => {
+        bannerImg.src = 'jihan.jpg';
+        bannerImg.style.opacity = '1';
+      }, 120);
+      playBeep();
+    });
+  }
+}
 
 // Initialize UI
 if (currentPairCode) {

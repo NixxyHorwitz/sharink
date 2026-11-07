@@ -9,27 +9,47 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Romantic Header with Photo of Fahri & Jihan -->
-    <header class="app-header">
-      <div class="brand">
-        <div class="couple-avatar-wrapper">
-          <img src="couple.jpg" alt="Fahri & Jihan" class="couple-avatar">
-          <span class="heart-badge">❤️</span>
+    <!-- Big Romantic Banner with Couple Photo -->
+    <div class="banner-wrapper">
+      <div class="romantic-banner">
+        <img src="couple.jpg" alt="Fahri & Jihan" id="bannerImg" class="banner-image">
+        <div class="banner-overlay"></div>
+        
+        <!-- Status badge inside banner -->
+        <div class="banner-top-bar">
+          <div class="status-pill" id="statusBadge">
+            <span class="status-dot"></span>
+            <span id="statusText">Belum Terhubung</span>
+          </div>
+          <span class="banner-love-badge">💕 Fahri &amp; Jihan</span>
         </div>
-        <div>
+
+        <!-- Banner bottom caption -->
+        <div class="banner-caption">
           <h1 class="brand-title">
             <span>Fahri</span>
             <span class="heart-pulse">❤️</span>
             <span>Jihan</span>
           </h1>
-          <p class="tagline">Sharink &bull; Kirim link penuh cinta ✨</p>
+          <p class="tagline">Sharink &bull; Dua hati, satu link yang selalu terhubung ✨</p>
         </div>
       </div>
-      <div class="status-pill" id="statusBadge">
-        <span class="status-dot"></span>
-        <span id="statusText">Belum Terhubung</span>
+
+      <!-- Overlapping Dual Avatars (Fahri & Jihan) -->
+      <div class="avatars-overlap-row">
+        <div class="avatar-box">
+          <img src="fahri.jpg" alt="Fahri" class="avatar-photo" id="avatarFahri" title="Klik untuk lihat foto Fahri">
+          <span class="avatar-name">Fahri</span>
+        </div>
+        <div class="avatar-heart-bridge">
+          <span class="heart-pulse-icon">💖</span>
+        </div>
+        <div class="avatar-box">
+          <img src="jihan.jpg" alt="Jihan" class="avatar-photo" id="avatarJihan" title="Klik untuk lihat foto Jihan">
+          <span class="avatar-name">Jihan</span>
+        </div>
       </div>
-    </header>
+    </div>
 
     <!-- Pairing Card -->
     <section class="card pair-card">

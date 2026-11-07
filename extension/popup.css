@@ -23,7 +23,7 @@
 }
 
 body {
-  width: 350px;
+  width: 360px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   background-color: var(--bg-app);
   color: var(--text-main);
@@ -41,7 +41,7 @@ body {
   position: relative;
 }
 
-/* Floating Hearts Canvas / Container */
+/* Floating Hearts Container */
 .hearts-container {
   position: absolute;
   top: 0;
@@ -75,70 +75,128 @@ body {
   }
 }
 
-/* Couple Hero Header */
-.couple-hero {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  background: linear-gradient(135deg, #fff1f2 0%, #ffffff 50%, #fdf4ff 100%);
-  border: 1px solid var(--pink-border);
+/* Romantic Banner Section */
+.banner-wrapper {
+  position: relative;
+  margin-bottom: 2px;
+}
+
+.romantic-banner {
+  position: relative;
+  width: 100%;
+  height: 135px;
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--pink-border);
+  box-shadow: 0 6px 16px rgba(244, 63, 94, 0.2);
 }
 
-.couple-avatar-wrapper {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-}
-
-.couple-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+.banner-image {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  object-position: center 20%;
-  border: 2px solid var(--primary-rose);
-  box-shadow: 0 2px 8px rgba(244, 63, 94, 0.25);
+  object-position: center 25%;
   display: block;
+  transition: transform 0.3s ease;
 }
 
-.heart-badge {
+.romantic-banner:hover .banner-image {
+  transform: scale(1.02);
+}
+
+.banner-overlay {
   position: absolute;
-  bottom: -2px;
-  right: -2px;
-  font-size: 12px;
-  background: white;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(136, 19, 55, 0.85) 0%,
+    rgba(136, 19, 55, 0.3) 50%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  pointer-events: none;
+}
+
+.banner-top-bar {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+}
+
+.banner-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.status-dot-pulse {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
 }
 
-.couple-meta {
-  flex: 1;
-  min-width: 0;
+.status-dot-pulse.sync {
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
 }
 
-.couple-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #881337;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.status-dot-pulse.offline {
+  background: #ef4444;
+  box-shadow: 0 0 6px #ef4444;
 }
 
-.heart-pulse {
-  display: inline-block;
+.btn-glass {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
   font-size: 13px;
-  color: var(--primary-rose);
+  padding: 4px 7px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-glass:hover {
+  background: rgba(244, 63, 94, 0.6);
+}
+
+.banner-caption {
+  position: absolute;
+  bottom: 8px;
+  left: 12px;
+  right: 12px;
+  z-index: 2;
+  color: white;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.couple-names {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.heart-anim {
+  display: inline-block;
+  color: #ff4d6d;
   animation: pulseBeat 1.4s infinite;
 }
 
@@ -150,55 +208,67 @@ body {
   70% { transform: scale(1); }
 }
 
-.connection-status-row {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+.couple-sub {
+  font-size: 10px;
+  color: #fecdd3;
+  font-weight: 500;
   margin-top: 1px;
 }
 
-.status-indicator {
-  width: 7px;
-  height: 7px;
+/* Overlapping Dual Avatars */
+.avatars-overlap-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: -18px;
+  position: relative;
+  z-index: 3;
+}
+
+.avatar-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-photo {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: #cbd5e1;
-  transition: background 0.2s ease;
+  object-fit: cover;
+  border: 2.5px solid white;
+  box-shadow: 0 4px 10px rgba(244, 63, 94, 0.28);
+  background: white;
+  transition: transform 0.2s;
 }
 
-.status-indicator.online {
-  background: #10b981;
-  box-shadow: 0 0 6px #10b981;
+.avatar-photo:hover {
+  transform: scale(1.08);
 }
 
-.status-indicator.sync {
-  background: #3b82f6;
-  box-shadow: 0 0 6px #3b82f6;
+.avatar-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: #881337;
+  margin-top: 2px;
 }
 
-.status-indicator.offline {
-  background: #ef4444;
+.avatar-heart-bridge {
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  font-size: 13px;
+  margin-top: -14px;
 }
 
-.status-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.btn-icon {
-  background: none;
-  border: none;
-  font-size: 15px;
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 6px;
-  color: var(--text-muted);
-  transition: background 0.15s;
-}
-
-.btn-icon:hover {
-  background: rgba(244, 63, 94, 0.1);
-  color: var(--primary-rose);
+.heart-pulse-icon {
+  animation: pulseBeat 1.4s infinite;
 }
 
 /* General Card */

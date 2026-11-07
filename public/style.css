@@ -37,73 +37,144 @@ body {
   gap: 16px;
 }
 
-.app-header {
+.banner-wrapper {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.romantic-banner {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 6px 18px rgba(244, 63, 94, 0.2);
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+  display: block;
+  cursor: pointer;
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+.romantic-banner:hover .banner-image {
+  transform: scale(1.02);
+}
+
+.banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(136, 19, 55, 0.88) 0%,
+    rgba(136, 19, 55, 0.3) 55%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  pointer-events: none;
+}
+
+.banner-top-bar {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  z-index: 2;
 }
 
-.brand {
+.banner-love-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.banner-caption {
+  position: absolute;
+  bottom: 12px;
+  left: 14px;
+  right: 14px;
+  z-index: 2;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.brand-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
 }
 
-.couple-avatar-wrapper {
+.tagline {
+  font-size: 11px;
+  color: #ffe4e6;
+  margin-top: 2px;
+}
+
+.avatars-overlap-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: -24px;
   position: relative;
-  width: 52px;
-  height: 52px;
-  flex-shrink: 0;
+  z-index: 3;
 }
 
-.couple-avatar {
+.avatar-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-photo {
   width: 52px;
   height: 52px;
   border-radius: 50%;
   object-fit: cover;
-  object-position: center 20%;
-  border: 2px solid #f43f5e;
-  box-shadow: 0 4px 10px rgba(244, 63, 94, 0.3);
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.35);
+  background: white;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
-.heart-badge {
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
-  font-size: 13px;
+.avatar-photo:hover {
+  transform: scale(1.1);
+}
+
+.avatar-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #881337;
+  margin-top: 3px;
+}
+
+.avatar-heart-bridge {
+  width: 26px;
+  height: 26px;
   background: white;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-}
-
-.brand-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #881337;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.heart-pulse {
-  display: inline-block;
-  font-size: 16px;
-  color: #f43f5e;
-  animation: pulseBeat 1.4s infinite;
-}
-
-@keyframes pulseBeat {
-  0% { transform: scale(1); }
-  14% { transform: scale(1.3); }
-  28% { transform: scale(1); }
-  42% { transform: scale(1.2); }
-  70% { transform: scale(1); }
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  margin-top: -18px;
 }
 
 .btn-love {
