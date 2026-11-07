@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Pengaturan Sharink</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="options-container">
+    <header class="header">
+      <img src="icons/icon48.png" alt="logo" class="logo">
+      <div>
+        <h1>Pengaturan Sharink</h1>
+        <p class="subtitle">Konfigurasi server relay dan preferensi penerimaan link</p>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="form-group">
+        <label for="serverUrl" class="label">Alamat Server Relay</label>
+        <input 
+          type="text" 
+          id="serverUrl" 
+          placeholder="ws://localhost:3000 atau https://xxx.vercel.app" 
+          spellcheck="false"
+        >
+        <p class="help-text">
+          - <strong>Render / Local:</strong> Gunakan format WebSocket, misal <code>wss://sharink-app.onrender.com</code> atau <code>ws://localhost:3000</code>.<br>
+          - <strong>Vercel:</strong> Gunakan URL Vercel Anda, misal <code>https://sharink-app.vercel.app</code>.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="deviceName" class="label">Nama Perangkat Ini</label>
+        <input 
+          type="text" 
+          id="deviceName" 
+          placeholder="Misal: Laptop Kantor atau PC Rumah"
+        >
+        <p class="help-text">Nama ini akan muncul pada notifikasi perangkat penerima saat Anda mengirim link.</p>
+      </div>
+
+      <div class="form-group-checkbox">
+        <label class="checkbox-label">
+          <input type="checkbox" id="autoOpen">
+          <span><strong>Buka link otomatis saat diterima</strong> (langsung membuka tab baru di browser tanpa harus mengklik notifikasi)</span>
+        </label>
+      </div>
+
+      <div class="button-row">
+        <button id="btnSave" class="btn btn-primary">Simpan Pengaturan</button>
+        <button id="btnTest" class="btn btn-secondary">Uji Koneksi Server</button>
+      </div>
+
+      <div id="testResult" class="test-result"></div>
+    </div>
+
+    <div class="card info-card">
+      <h2>💡 Tips & Pintasan Cepat</h2>
+      <ul class="tips-list">
+        <li><strong>Pintasan Keyboard:</strong> Tekan <code>Alt + Shift + S</code> kapan saja untuk langsung mengirim tab aktif saat ini tanpa membuka popup!</li>
+        <li><strong>Klik Kanan (Context Menu):</strong> Klik kanan pada halaman atau link mana pun &rarr; pilih <em>"Kirim Halaman / Link via Sharink"</em>.</li>
+        <li><strong>Kompatibilitas Mobile:</strong> Buka web companion di browser HP Anda dengan pair code yang sama untuk saling kirim link PC &harr; HP!</li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

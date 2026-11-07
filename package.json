@@ -1,0 +1,21 @@
+{
+  "name": "sharink",
+  "version": "1.0.0",
+  "description": "Cross-device link sharing extension and server with pair code",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "keywords": [
+    "browser-extension",
+    "link-sharing",
+    "websocket",
+    "pairing"
+  ],
+  "author": "",
+  "license": "MIT"
+}

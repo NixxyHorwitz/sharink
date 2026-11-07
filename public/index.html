@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sharink - Cross-Device Link Sharing</title>
+  <link rel="icon" type="image/png" href="icon48.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo-icon">🔗</div>
+        <div>
+          <h1>Sharink</h1>
+          <p class="tagline">Kirim link sekejap antarperangkat</p>
+        </div>
+      </div>
+      <div class="status-pill" id="statusBadge">
+        <span class="status-dot"></span>
+        <span id="statusText">Belum Terhubung</span>
+      </div>
+    </header>
+
+    <!-- Pairing Card -->
+    <section class="card pair-card">
+      <label class="label" for="pairCodeInput">Pair Code Perangkat</label>
+      <div class="input-group">
+        <input 
+          type="text" 
+          id="pairCodeInput" 
+          placeholder="Contoh: RUMAH-PC atau ABC123" 
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <button id="btnJoin" class="btn btn-primary">Sambungkan</button>
+      </div>
+      <div class="pair-actions">
+        <button id="btnGenerate" class="btn-text">🎲 Buat Kode Acak</button>
+        <span id="deviceCount" class="device-count"></span>
+      </div>
+    </section>
+
+    <!-- Send Link Card -->
+    <section class="card send-card">
+      <h2 class="card-title">📤 Kirim Link</h2>
+      <div class="form-group">
+        <input 
+          type="url" 
+          id="linkUrlInput" 
+          placeholder="https://contoh.com/artikel-menarik"
+          required
+        >
+      </div>
+      <div class="form-group">
+        <input 
+          type="text" 
+          id="linkTitleInput" 
+          placeholder="Judul link (opsional)"
+        >
+      </div>
+      <button id="btnSend" class="btn btn-success btn-block">
+        🚀 Kirim Link Sekarang
+      </button>
+      <p id="sendFeedback" class="feedback-msg"></p>
+    </section>
+
+    <!-- Received Links Card -->
+    <section class="card received-card">
+      <div class="card-header-flex">
+        <h2 class="card-title">📥 Link Diterima</h2>
+        <label class="switch-label">
+          <input type="checkbox" id="autoOpenToggle">
+          <span>Buka otomatis</span>
+        </label>
+      </div>
+      <div id="linksList" class="links-list">
+        <div class="empty-state">
+          Belum ada link yang diterima. Hubungkan kode yang sama di perangkat lain dan kirim link!
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer / How-to -->
+    <footer class="app-footer">
+      <details>
+        <summary>ℹ️ Cara Pasang Ekstensi di Chrome / Edge</summary>
+        <ol class="help-list">
+          <li>Buka <code>chrome://extensions</code> atau <code>edge://extensions</code> di browser laptop/PC.</li>
+          <li>Aktifkan <strong>Developer mode</strong> (Mode pengembang) di pojok kanan atas.</li>
+          <li>Klik <strong>Load unpacked</strong> (Muat yang belum dibongkar).</li>
+          <li>Pilih folder <code>extension</code> dari repo ini.</li>
+          <li>Masukkan Pair Code yang sama persis di ekstensi dan di web ini!</li>
+        </ol>
+      </details>
+      <p class="copyright">&copy; 2026 Sharink &bull; Cepat &bull; Simpel &bull; Tanpa Ribet</p>
+    </footer>
+  </div>
+
+  <audio id="audioNotification" preload="auto">
+    <source src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..." type="audio/wav">
+  </audio>
+
+  <script src="app.js"></script>
+</body>
+</html>
