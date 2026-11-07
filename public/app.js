@@ -4,6 +4,13 @@ let pollTimer = null;
 let currentPairCode = localStorage.getItem('sharink_pair_code') || 'FAHRI-JIHAN';
 let lastPollTimestamp = 0;
 let receivedLinks = [];
+let myDeviceId = localStorage.getItem('sharink_device_id');
+if (!myDeviceId) {
+  myDeviceId = 'web_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 8);
+  localStorage.setItem('sharink_device_id', myDeviceId);
+}
+const mySentLinkIds = new Set();
+const recentlySentUrls = new Map();
 
 const pairCodeInput = document.getElementById('pairCodeInput');
 const btnJoin = document.getElementById('btnJoin');
@@ -141,7 +148,8 @@ function joinRoom(code) {
       ws.send(JSON.stringify({
         type: 'JOIN_ROOM',
         pairCode: code,
-        deviceName: 'Web Browser (' + (navigator.userAgentData?.platform || 'Device') + ')'
+        deviceName: 'Web Browser (' + (navigator.userAgentData?.platform || 'Device') + ')',
+        deviceId: myDeviceId
       }));
     };
 
@@ -188,7 +196,7 @@ function startHttpPolling(code) {
   
   const poll = async () => {
     try {
-      const res = await fetch(`/api/poll?pairCode=${encodeURIComponent(code)}&since=${lastPollTimestamp}`);
+      const res = await fetch(`/api/poll?pairCode=${encodeURIComponent(code)}&since=${lastPollTimestamp}&excludeSender=${encodeURIComponent(myDeviceId)}`);
       if (res.ok) {
         const data = await res.json();
         if (data.links && data.links.length > 0) {
@@ -206,6 +214,16 @@ function startHttpPolling(code) {
 }
 
 function handleIncomingLink(item) {
+  if (!item || !item.url) return;
+
+  // Never receive links sent by this device!
+  if (item.senderId && item.senderId === myDeviceId) return;
+  if (item.id && mySentLinkIds.has(item.id)) return;
+  if (recentlySentUrls.has(item.url)) {
+    const sentTime = recentlySentUrls.get(item.url);
+    if (Date.now() - sentTime < 25000) return;
+  }
+
   // Avoid duplicate IDs
   if (receivedLinks.some(l => l.id === item.id)) return;
 
@@ -296,16 +314,26 @@ btnSend.addEventListener('click', async () => {
     return;
   }
 
+  const linkId = 'link_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+  mySentLinkIds.add(linkId);
+  recentlySentUrls.set(url, Date.now());
+
   sendFeedback.textContent = 'Mengirim...';
+
+  const payload = {
+    id: linkId,
+    pairCode: currentPairCode,
+    url,
+    title: title || url,
+    sender: 'Web Companion',
+    senderId: myDeviceId
+  };
 
   // Send via WebSocket if connected
   if (ws && ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify({
       type: 'SEND_LINK',
-      pairCode: currentPairCode,
-      url,
-      title: title || url,
-      sender: 'Web Companion'
+      ...payload
     }));
     sendFeedback.className = 'feedback-msg success';
     sendFeedback.textContent = 'Link berhasil dikirim!';
@@ -318,12 +346,7 @@ btnSend.addEventListener('click', async () => {
       const res = await fetch('/api/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          pairCode: currentPairCode,
-          url,
-          title: title || url,
-          sender: 'Web Companion'
-        })
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (data.success) {

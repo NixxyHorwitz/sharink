@@ -3,7 +3,10 @@ let socket = null;
 let reconnectTimer = null;
 let pollInterval = null;
 let lastPollTimestamp = 0;
+let myDeviceId = null;
 const notificationMap = new Map(); // id -> url
+const mySentLinkIds = new Set();
+const recentlySentUrls = new Map();
 
 // Default configuration
 const DEFAULT_CONFIG = {
@@ -14,8 +17,25 @@ const DEFAULT_CONFIG = {
   soundAlert: true
 };
 
+async function getDeviceId() {
+  if (myDeviceId) return myDeviceId;
+  return new Promise((resolve) => {
+    chrome.storage.local.get(['deviceId'], (res) => {
+      if (res.deviceId) {
+        myDeviceId = res.deviceId;
+        resolve(res.deviceId);
+      } else {
+        const generated = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 8);
+        myDeviceId = generated;
+        chrome.storage.local.set({ deviceId: generated }, () => resolve(generated));
+      }
+    });
+  });
+}
+
 // Initialize configuration
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(async () => {
+  await getDeviceId();
   chrome.storage.local.get(Object.keys(DEFAULT_CONFIG), (res) => {
     const toSet = {};
     for (const key in DEFAULT_CONFIG) {
@@ -53,7 +73,8 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 // Setup Connection based on stored settings
-function setupConnection() {
+async function setupConnection() {
+  const deviceId = await getDeviceId();
   chrome.storage.local.get(['serverUrl', 'pairCode', 'deviceName'], (config) => {
     const serverUrl = (config.serverUrl || DEFAULT_CONFIG.serverUrl).trim();
     const pairCode = (config.pairCode || '').trim().toUpperCase();
@@ -66,15 +87,15 @@ function setupConnection() {
     }
 
     if (serverUrl.startsWith('ws://') || serverUrl.startsWith('wss://')) {
-      connectWebSocket(serverUrl, pairCode, deviceName);
+      connectWebSocket(serverUrl, pairCode, deviceName, deviceId);
     } else if (serverUrl.startsWith('http://') || serverUrl.startsWith('https://')) {
-      startHttpPolling(serverUrl, pairCode);
+      startHttpPolling(serverUrl, pairCode, deviceId);
     }
   });
 }
 
 // ----------------- WebSocket Mode -----------------
-function connectWebSocket(serverUrl, pairCode, deviceName) {
+function connectWebSocket(serverUrl, pairCode, deviceName, deviceId) {
   if (pollInterval) {
     clearInterval(pollInterval);
     pollInterval = null;
@@ -94,7 +115,8 @@ function connectWebSocket(serverUrl, pairCode, deviceName) {
       socket.send(JSON.stringify({
         type: 'JOIN_ROOM',
         pairCode,
-        deviceName
+        deviceName,
+        deviceId
       }));
     };
 
@@ -127,7 +149,7 @@ function connectWebSocket(serverUrl, pairCode, deviceName) {
 }
 
 // ----------------- HTTP Polling Mode (for Vercel Serverless) -----------------
-function startHttpPolling(serverUrl, pairCode) {
+function startHttpPolling(serverUrl, pairCode, deviceId) {
   if (socket) {
     try { socket.close(); } catch (e) {}
     socket = null;
@@ -139,7 +161,8 @@ function startHttpPolling(serverUrl, pairCode) {
   const poll = async () => {
     try {
       const cleanUrl = serverUrl.replace(/\/+$/, '');
-      const res = await fetch(`${cleanUrl}/api/poll?pairCode=${encodeURIComponent(pairCode)}&since=${lastPollTimestamp}`);
+      const excludeParam = deviceId ? `&excludeSender=${encodeURIComponent(deviceId)}` : '';
+      const res = await fetch(`${cleanUrl}/api/poll?pairCode=${encodeURIComponent(pairCode)}&since=${lastPollTimestamp}${excludeParam}`);
       if (res.ok) {
         const data = await res.json();
         if (data.links && Array.isArray(data.links)) {
@@ -154,13 +177,29 @@ function startHttpPolling(serverUrl, pairCode) {
 
   if (pollInterval) clearInterval(pollInterval);
   poll();
-  pollInterval = setInterval(poll, 4000);
+  pollInterval = setInterval(poll, 3000);
 }
 
 // ----------------- Handle Incoming Link -----------------
 function handleIncomingLink(linkData) {
-  const { id, url, title, sender } = linkData;
-  if (!url) return;
+  if (!linkData || !linkData.url) return;
+  const { id, url, title, sender, senderId } = linkData;
+
+  // 1. FILTER: Ignore links sent by this exact device
+  if (senderId && myDeviceId && senderId === myDeviceId) {
+    return;
+  }
+  // 2. FILTER: Ignore links whose ID was sent by this device
+  if (id && mySentLinkIds.has(id)) {
+    return;
+  }
+  // 3. FILTER: Ignore exact URLs sent by this device in the last 25 seconds
+  if (recentlySentUrls.has(url)) {
+    const sentTime = recentlySentUrls.get(url);
+    if (Date.now() - sentTime < 25000) {
+      return;
+    }
+  }
 
   // Save to received links history
   chrome.storage.local.get(['receivedLinks', 'autoOpen'], (res) => {
@@ -186,7 +225,7 @@ function handleIncomingLink(linkData) {
     chrome.notifications.create(notifId, {
       type: 'basic',
       iconUrl: 'icons/icon128.png',
-      title: `Link Masuk dari ${sender || 'Perangkat Lain'}!`,
+      title: `Link Masuk dari ${sender || 'Pasangan'}!`,
       message: `${title || 'Ada link baru'}\n${url}`,
       contextMessage: 'Klik notifikasi untuk membuka tab',
       buttons: [
@@ -233,7 +272,14 @@ chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) =
 
 // ----------------- Send Link Function -----------------
 async function sendLink(url, title) {
-  return new Promise((resolve) => {
+  return new Promise(async (resolve) => {
+    const deviceId = await getDeviceId();
+    const linkId = 'link_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+    
+    // Immediately record locally as sent by us so we NEVER receive it back
+    mySentLinkIds.add(linkId);
+    recentlySentUrls.set(url, Date.now());
+
     chrome.storage.local.get(['serverUrl', 'pairCode', 'deviceName'], async (config) => {
       const serverUrl = (config.serverUrl || DEFAULT_CONFIG.serverUrl).trim();
       const pairCode = (config.pairCode || '').trim().toUpperCase();
@@ -244,16 +290,22 @@ async function sendLink(url, title) {
         return;
       }
 
+      const payload = {
+        id: linkId,
+        pairCode,
+        url,
+        title: title || url,
+        sender,
+        senderId: deviceId
+      };
+
       // Try WebSocket first if open
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({
           type: 'SEND_LINK',
-          pairCode,
-          url,
-          title: title || url,
-          sender
+          ...payload
         }));
-        recordSentLink({ url, title, sender, timestamp: Date.now() });
+        recordSentLink({ id: linkId, url, title, sender, timestamp: Date.now() });
         resolve({ success: true, via: 'websocket' });
         return;
       }
@@ -268,11 +320,11 @@ async function sendLink(url, title) {
         const res = await fetch(httpEndpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pairCode, url, title, sender })
+          body: JSON.stringify(payload)
         });
         const data = await res.json();
         if (data.success) {
-          recordSentLink({ url, title, sender, timestamp: Date.now() });
+          recordSentLink({ id: linkId, url, title, sender, timestamp: Date.now() });
           resolve({ success: true, via: 'http' });
         } else {
           resolve({ success: false, error: data.error || 'Gagal mengirim link' });

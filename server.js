@@ -80,7 +80,7 @@ const server = http.createServer((req, res) => {
     req.on('end', () => {
       try {
         const payload = JSON.parse(body || '{}');
-        const { pairCode, url, title, sender } = payload;
+        const { id, pairCode, url, title, sender, senderId } = payload;
 
         if (!pairCode || !url) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -90,10 +90,11 @@ const server = http.createServer((req, res) => {
 
         const room = getOrCreateRoom(pairCode);
         const linkItem = {
-          id: 'link_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+          id: id || ('link_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7)),
           url: url.trim(),
           title: (title || '').trim() || url.trim(),
           sender: (sender || 'Web').trim(),
+          senderId: (senderId || '').trim(),
           timestamp: Date.now()
         };
 
@@ -101,11 +102,11 @@ const server = http.createServer((req, res) => {
         room.links.unshift(linkItem);
         if (room.links.length > 30) room.links.pop();
 
-        // Broadcast to all connected sockets in this room
+        // Broadcast to all connected sockets in this room (except sender)
         const msg = JSON.stringify({ type: 'RECEIVE_LINK', ...linkItem });
         let sentCount = 0;
         room.sockets.forEach(ws => {
-          if (ws.readyState === WebSocket.OPEN) {
+          if (ws.readyState === WebSocket.OPEN && (!senderId || ws.deviceId !== senderId)) {
             ws.send(msg);
             sentCount++;
           }
@@ -125,6 +126,7 @@ const server = http.createServer((req, res) => {
   if (pathname === '/api/poll' && req.method === 'GET') {
     const pairCode = parsedUrl.searchParams.get('pairCode');
     const since = parseInt(parsedUrl.searchParams.get('since') || '0', 10);
+    const excludeSender = (parsedUrl.searchParams.get('excludeSender') || '').trim();
 
     if (!pairCode) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -133,7 +135,10 @@ const server = http.createServer((req, res) => {
     }
 
     const room = getOrCreateRoom(pairCode);
-    const newLinks = room.links.filter(l => l.timestamp > since);
+    let newLinks = room.links.filter(l => l.timestamp > since);
+    if (excludeSender) {
+      newLinks = newLinks.filter(l => !l.senderId || l.senderId !== excludeSender);
+    }
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ success: true, links: newLinks, lastTimestamp: Date.now() }));
@@ -207,6 +212,7 @@ wss.on('connection', (ws) => {
 
           currentPairCode = rawCode;
           deviceName = (data.deviceName || 'Browser').trim();
+          ws.deviceId = (data.deviceId || '').trim();
 
           const room = getOrCreateRoom(currentPairCode);
           room.sockets.add(ws);
@@ -238,6 +244,7 @@ wss.on('connection', (ws) => {
           const url = (data.url || '').trim();
           const title = (data.title || url).trim();
           const sender = (data.sender || deviceName).trim();
+          const senderId = (data.senderId || ws.deviceId || '').trim();
 
           if (!pairCode || !url) {
             ws.send(JSON.stringify({ type: 'ERROR', message: 'Missing pairCode or url' }));
@@ -246,10 +253,11 @@ wss.on('connection', (ws) => {
 
           const room = getOrCreateRoom(pairCode);
           const linkItem = {
-            id: 'link_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+            id: data.id || ('link_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7)),
             url,
             title,
             sender,
+            senderId,
             timestamp: Date.now()
           };
 
@@ -259,10 +267,10 @@ wss.on('connection', (ws) => {
 
           console.log(`[->] Link sent in [${pairCode}] by ${sender}: ${url}`);
 
-          // Broadcast to ALL OTHER clients in room
+          // Broadcast to ALL OTHER clients in room (skip sender socket and matching deviceId)
           let broadcastedCount = 0;
           room.sockets.forEach(client => {
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
+            if (client !== ws && (!senderId || client.deviceId !== senderId) && client.readyState === WebSocket.OPEN) {
               client.send(JSON.stringify({
                 type: 'RECEIVE_LINK',
                 ...linkItem

@@ -19,13 +19,17 @@ module.exports = async (req, res) => {
   try {
     const pairCode = req.query.pairCode;
     const since = parseInt(req.query.since || '0', 10);
+    const excludeSender = (req.query.excludeSender || '').trim();
 
     if (!pairCode) {
       res.status(400).json({ success: false, error: 'pairCode parameter required' });
       return;
     }
 
-    const links = await getLinks(pairCode, since);
+    let links = await getLinks(pairCode, since);
+    if (excludeSender && Array.isArray(links)) {
+      links = links.filter(l => !l.senderId || l.senderId !== excludeSender);
+    }
 
     res.status(200).json({
       success: true,

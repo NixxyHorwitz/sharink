@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { pairCode, url, title, sender } = req.body || {};
+    const { id, pairCode, url, title, sender, senderId } = req.body || {};
 
     if (!pairCode || !url) {
       res.status(400).json({ success: false, error: 'pairCode and url are required' });
@@ -25,10 +25,11 @@ module.exports = async (req, res) => {
     }
 
     const linkItem = {
-      id: 'link_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+      id: id || ('link_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7)),
       url: url.trim(),
       title: (title || '').trim() || url.trim(),
       sender: (sender || 'Device').trim(),
+      senderId: (senderId || '').trim(),
       timestamp: Date.now()
     };
 

@@ -25,10 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $action === 'send') {
     $url = trim($input['url'] ?? '');
     $title = trim($input['title'] ?? '') ?: $url;
     $sender = trim($input['sender'] ?? 'Device');
+    $senderId = trim($input['senderId'] ?? '');
 
     if (empty($code) || empty($url)) {
         http_response_code(400);
-        echo json_encode(['success' => false, error => 'pairCode and url are required']);
+        echo json_encode(['success' => false, 'error' => 'pairCode and url are required']);
         exit;
     }
 
@@ -36,10 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $action === 'send') {
     $data = file_exists($file) ? (json_decode(file_get_contents($file), true) ?? []) : [];
 
     $item = [
-        'id' => 'link_' . round(microtime(true) * 1000) . '_' . substr(md5(uniqid()), 0, 5),
+        'id' => $input['id'] ?? ('link_' . round(microtime(true) * 1000) . '_' . substr(md5(uniqid()), 0, 5)),
         'url' => $url,
         'title' => $title,
         'sender' => $sender,
+        'senderId' => $senderId,
         'timestamp' => round(microtime(true) * 1000)
     ];
 
@@ -62,12 +64,16 @@ if ($action === 'poll' || isset($_GET['pairCode'])) {
     }
 
     $since = (int)($_GET['since'] ?? 0);
+    $excludeSender = trim($_GET['excludeSender'] ?? '');
     $file = $storageDir . '/' . md5($pairCode) . '.json';
     $data = file_exists($file) ? (json_decode(file_get_contents($file), true) ?? []) : [];
 
     $newLinks = [];
     foreach ($data as $item) {
         if (($item['timestamp'] ?? 0) > $since) {
+            if ($excludeSender && !empty($item['senderId']) && $item['senderId'] === $excludeSender) {
+                continue;
+            }
             $newLinks[] = $item;
         }
     }
