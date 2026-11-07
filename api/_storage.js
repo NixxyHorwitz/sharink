@@ -69,3 +69,4 @@ async function getLinks(pairCode, since = 0) {
 }
 
 module.exports = { saveLink, getLinks };
+

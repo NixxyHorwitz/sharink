@@ -128,3 +128,4 @@ Jika hanya ingin mengirim link antarperangkat di jaringan WiFi rumah yang sama:
 | **Kirim Tab Saat Ini** | Tekan `Alt + Shift + S` di keyboard |
 | **Kirim via Klik Kanan** | Klik kanan pada link atau halaman &rarr; *Kirim via Sharink* |
 | **Buka Otomatis** | Aktifkan di menu Pengaturan (⚙️) |
+

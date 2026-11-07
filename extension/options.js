@@ -113,3 +113,4 @@ async function testHttp(httpUrl) {
     testResult.textContent = '❌ Gagal terhubung ke HTTP endpoint: ' + err.message;
   }
 }
+

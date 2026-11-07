@@ -3,19 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sharink - Cross-Device Link Sharing</title>
+  <title>Sharink 💕 Fahri & Jihan</title>
   <link rel="icon" type="image/png" href="icon48.png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-container">
-    <!-- Header -->
+    <!-- Romantic Header with Photo of Fahri & Jihan -->
     <header class="app-header">
       <div class="brand">
-        <div class="logo-icon">🔗</div>
+        <div class="couple-avatar-wrapper">
+          <img src="couple.jpg" alt="Fahri & Jihan" class="couple-avatar">
+          <span class="heart-badge">❤️</span>
+        </div>
         <div>
-          <h1>Sharink</h1>
-          <p class="tagline">Kirim link sekejap antarperangkat</p>
+          <h1 class="brand-title">
+            <span>Fahri</span>
+            <span class="heart-pulse">❤️</span>
+            <span>Jihan</span>
+          </h1>
+          <p class="tagline">Sharink &bull; Kirim link penuh cinta ✨</p>
         </div>
       </div>
       <div class="status-pill" id="statusBadge">
@@ -26,31 +33,32 @@
 
     <!-- Pairing Card -->
     <section class="card pair-card">
-      <label class="label" for="pairCodeInput">Pair Code Perangkat</label>
+      <label class="label" for="pairCodeInput">Pair Code Pasangan</label>
       <div class="input-group">
         <input 
           type="text" 
           id="pairCodeInput" 
-          placeholder="Contoh: RUMAH-PC atau ABC123" 
+          placeholder="FAHRI-JIHAN" 
+          value="FAHRI-JIHAN"
           autocomplete="off"
           spellcheck="false"
         >
         <button id="btnJoin" class="btn btn-primary">Sambungkan</button>
       </div>
       <div class="pair-actions">
-        <button id="btnGenerate" class="btn-text">🎲 Buat Kode Acak</button>
+        <button id="btnGenerate" class="btn-text">🎲 Buat Kode Baru</button>
         <span id="deviceCount" class="device-count"></span>
       </div>
     </section>
 
     <!-- Send Link Card -->
     <section class="card send-card">
-      <h2 class="card-title">📤 Kirim Link</h2>
+      <h2 class="card-title">💌 Kirim Link ke Pasangan</h2>
       <div class="form-group">
         <input 
           type="url" 
           id="linkUrlInput" 
-          placeholder="https://contoh.com/artikel-menarik"
+          placeholder="https://contoh.com/artikel-atau-video"
           required
         >
       </div>
@@ -58,11 +66,11 @@
         <input 
           type="text" 
           id="linkTitleInput" 
-          placeholder="Judul link (opsional)"
+          placeholder="Pesan / Judul link (opsional)"
         >
       </div>
-      <button id="btnSend" class="btn btn-success btn-block">
-        🚀 Kirim Link Sekarang
+      <button id="btnSend" class="btn btn-love btn-block">
+        💖 Kirim Link Sekarang
       </button>
       <p id="sendFeedback" class="feedback-msg"></p>
     </section>
@@ -78,30 +86,25 @@
       </div>
       <div id="linksList" class="links-list">
         <div class="empty-state">
-          Belum ada link yang diterima. Hubungkan kode yang sama di perangkat lain dan kirim link!
+          Belum ada link yang diterima. Hubungkan kode yang sama di browser laptop dan kirim link!
         </div>
       </div>
     </section>
 
-    <!-- Footer / How-to -->
+    <!-- Footer -->
     <footer class="app-footer">
       <details>
-        <summary>ℹ️ Cara Pasang Ekstensi di Chrome / Edge</summary>
+        <summary>ℹ️ Cara Pasang Ekstensi di Laptop</summary>
         <ol class="help-list">
-          <li>Buka <code>chrome://extensions</code> atau <code>edge://extensions</code> di browser laptop/PC.</li>
-          <li>Aktifkan <strong>Developer mode</strong> (Mode pengembang) di pojok kanan atas.</li>
-          <li>Klik <strong>Load unpacked</strong> (Muat yang belum dibongkar).</li>
-          <li>Pilih folder <code>extension</code> dari repo ini.</li>
-          <li>Masukkan Pair Code yang sama persis di ekstensi dan di web ini!</li>
+          <li>Buka <code>chrome://extensions</code> atau <code>edge://extensions</code> di laptop.</li>
+          <li>Aktifkan <strong>Developer mode</strong> di pojok kanan atas.</li>
+          <li>Klik <strong>Load unpacked</strong> &rarr; pilih folder <code>extension</code>.</li>
+          <li>Pastikan Pair Code sama (default: <code>FAHRI-JIHAN</code>).</li>
         </ol>
       </details>
-      <p class="copyright">&copy; 2026 Sharink &bull; Cepat &bull; Simpel &bull; Tanpa Ribet</p>
+      <p class="copyright">&copy; 2026 Sharink &bull; Khusus untuk Fahri &amp; Jihan ❤️</p>
     </footer>
   </div>
-
-  <audio id="audioNotification" preload="auto">
-    <source src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..." type="audio/wav">
-  </audio>
 
   <script src="app.js"></script>
 </body>

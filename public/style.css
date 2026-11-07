@@ -1,15 +1,15 @@
 :root {
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
+  --primary: #f43f5e;
+  --primary-hover: #e11d48;
   --success: #10b981;
   --success-hover: #059669;
-  --bg-app: #f8fafc;
+  --bg-app: #fff5f7;
   --card-bg: #ffffff;
-  --text-main: #0f172a;
+  --text-main: #1e293b;
   --text-muted: #64748b;
-  --border: #e2e8f0;
-  --radius: 12px;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --border: #ffe4e6;
+  --radius: 14px;
+  --shadow: 0 4px 12px -2px rgba(244, 63, 94, 0.08);
 }
 
 * {
@@ -50,22 +50,70 @@ body {
   gap: 12px;
 }
 
-.logo-icon {
-  font-size: 28px;
-  width: 44px;
-  height: 44px;
+.couple-avatar-wrapper {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.couple-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 20%;
+  border: 2px solid #f43f5e;
+  box-shadow: 0 4px 10px rgba(244, 63, 94, 0.3);
+}
+
+.heart-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  font-size: 13px;
+  background: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
-h1 {
-  font-size: 20px;
+.brand-title {
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: -0.5px;
+  color: #881337;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.heart-pulse {
+  display: inline-block;
+  font-size: 16px;
+  color: #f43f5e;
+  animation: pulseBeat 1.4s infinite;
+}
+
+@keyframes pulseBeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.3); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.2); }
+  70% { transform: scale(1); }
+}
+
+.btn-love {
+  background: linear-gradient(135deg, #f43f5e, #e11d48, #db2777);
+  color: white;
+  box-shadow: 0 4px 14px rgba(244, 63, 94, 0.3);
+}
+
+.btn-love:hover {
+  background: linear-gradient(135deg, #fb7185, #f43f5e, #e11d48);
 }
 
 .tagline {
@@ -364,3 +412,4 @@ details summary {
   color: #94a3b8;
   font-size: 11px;
 }
+

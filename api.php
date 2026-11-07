@@ -81,3 +81,4 @@ if ($action === 'poll' || isset($_GET['pairCode'])) {
 }
 
 echo json_encode(['status' => 'ok', 'platform' => 'php', 'time' => date('c')]);
+

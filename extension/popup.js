@@ -2,6 +2,7 @@
 let currentTab = null;
 let activeHistoryTab = 'received';
 
+const statusDot = document.getElementById('statusDot');
 const connectionBadge = document.getElementById('connectionBadge');
 const btnOpenOptions = document.getElementById('btnOpenOptions');
 const currentTabTitle = document.getElementById('currentTabTitle');
@@ -19,24 +20,52 @@ const tabSentBtn = document.getElementById('tabSentBtn');
 const historyList = document.getElementById('historyList');
 const receivedCount = document.getElementById('receivedCount');
 const sentCount = document.getElementById('sentCount');
+const heartsContainer = document.getElementById('heartsContainer');
+
+// Heart burst animation
+function triggerHeartBurst() {
+  const emojis = ['❤️', '💖', '💕', '✨', '🌸', '💘'];
+  for (let i = 0; i < 7; i++) {
+    const el = document.createElement('span');
+    el.className = 'floating-heart';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = (35 + Math.random() * 35) + '%';
+    el.style.top = '120px';
+    el.style.animationDelay = (i * 0.08) + 's';
+    heartsContainer.appendChild(el);
+
+    setTimeout(() => {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }, 1500);
+  }
+}
 
 // Initialize popup
 async function init() {
   // 1. Get current active tab
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (tab) {
-    currentTab = tab;
-    currentTabTitle.textContent = tab.title || 'Tab Tanpa Judul';
-    currentTabUrl.textContent = tab.url || '';
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab) {
+      currentTab = tab;
+      currentTabTitle.textContent = tab.title || 'Tab Tanpa Judul';
+      currentTabUrl.textContent = tab.url || '';
+    }
+  } catch (e) {
+    currentTabTitle.textContent = 'Siap mengirim link';
   }
 
   // 2. Load stored settings & history
   chrome.storage.local.get(['pairCode', 'serverUrl', 'receivedLinks', 'sentLinks'], (res) => {
-    if (res.pairCode) {
-      inputPairCode.value = res.pairCode;
-      pairStatus.textContent = `Aktif di Pair: ${res.pairCode}`;
-    } else {
-      pairStatus.textContent = 'Silakan atur Pair Code untuk mulai berbagi.';
+    // If no pair code set yet, default to sweet couple code FAHRI-JIHAN
+    const initialCode = res.pairCode || 'FAHRI-JIHAN';
+    inputPairCode.value = initialCode;
+    pairStatus.textContent = `Tersambung ke Pair: ${initialCode}`;
+
+    if (!res.pairCode) {
+      // Auto-save default code so user doesn't even need to type!
+      chrome.storage.local.set({ pairCode: initialCode }, () => {
+        chrome.runtime.sendMessage({ type: 'RECONNECT' });
+      });
     }
 
     updateHistory(res.receivedLinks || [], res.sentLinks || []);
@@ -46,13 +75,13 @@ async function init() {
   chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (status) => {
     if (status) {
       if (status.wsConnected) {
-        connectionBadge.className = 'badge badge-connected';
-        connectionBadge.textContent = 'WS Online';
+        statusDot.className = 'status-indicator online';
+        connectionBadge.textContent = 'Online (WS)';
       } else if (status.pollingActive) {
-        connectionBadge.className = 'badge badge-sync';
-        connectionBadge.textContent = 'HTTP Sync';
+        statusDot.className = 'status-indicator sync';
+        connectionBadge.textContent = 'Sync Aktif';
       } else {
-        connectionBadge.className = 'badge badge-disconnected';
+        statusDot.className = 'status-indicator offline';
         connectionBadge.textContent = 'Offline';
       }
     }
@@ -82,8 +111,8 @@ btnSavePairCode.addEventListener('click', () => {
     setTimeout(() => {
       chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (status) => {
         if (status?.wsConnected) {
-          connectionBadge.className = 'badge badge-connected';
-          connectionBadge.textContent = 'WS Online';
+          statusDot.className = 'status-indicator online';
+          connectionBadge.textContent = 'Online (WS)';
         }
       });
     }, 1000);
@@ -93,7 +122,7 @@ btnSavePairCode.addEventListener('click', () => {
 // Random Code Generator
 btnRandomCode.addEventListener('click', () => {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = 'LINK-';
+  let code = 'LOVE-';
   for (let i = 0; i < 4; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -105,9 +134,10 @@ btnRandomCode.addEventListener('click', () => {
 btnSendCurrentTab.addEventListener('click', async () => {
   if (!currentTab || !currentTab.url) return;
 
+  triggerHeartBurst();
   btnSendCurrentTab.disabled = true;
   sendFeedback.className = 'feedback-msg';
-  sendFeedback.textContent = 'Mengirim tab...';
+  sendFeedback.textContent = 'Mengirim tab dengan cinta...';
 
   chrome.runtime.sendMessage({
     type: 'SEND_ACTIVE_TAB',
@@ -117,7 +147,7 @@ btnSendCurrentTab.addEventListener('click', async () => {
     btnSendCurrentTab.disabled = false;
     if (response?.success) {
       sendFeedback.className = 'feedback-msg success';
-      sendFeedback.textContent = '✅ Berhasil terkirim ke perangkat paired!';
+      sendFeedback.textContent = '💖 Link berhasil terkirim ke pasangan!';
       // Refresh sent list
       chrome.storage.local.get(['receivedLinks', 'sentLinks'], (res) => {
         updateHistory(res.receivedLinks || [], res.sentLinks || []);
@@ -125,7 +155,7 @@ btnSendCurrentTab.addEventListener('click', async () => {
       setTimeout(() => { sendFeedback.textContent = ''; }, 3500);
     } else {
       sendFeedback.className = 'feedback-msg error';
-      sendFeedback.textContent = '❌ Gagal: ' + (response?.error || 'Periksa koneksi & Pair Code');
+      sendFeedback.textContent = '❌ Gagal: ' + (response?.error || 'Periksa server');
     }
   });
 });
@@ -135,6 +165,7 @@ btnSendManual.addEventListener('click', () => {
   const url = manualUrlInput.value.trim();
   if (!url) return;
 
+  triggerHeartBurst();
   chrome.runtime.sendMessage({
     type: 'SEND_ACTIVE_TAB',
     url,
@@ -143,7 +174,7 @@ btnSendManual.addEventListener('click', () => {
     if (response?.success) {
       manualUrlInput.value = '';
       sendFeedback.className = 'feedback-msg success';
-      sendFeedback.textContent = '✅ Link manual terkirim!';
+      sendFeedback.textContent = '💖 Link manual terkirim!';
       setTimeout(() => { sendFeedback.textContent = ''; }, 3000);
     }
   });
@@ -192,9 +223,9 @@ function renderHistoryItems(items) {
       <div class="history-item">
         <div class="history-item-content">
           <div class="history-item-title" title="${safeTitle}">${safeTitle}</div>
-          <div class="history-item-meta">${item.sender || 'Device'} &bull; ${time}</div>
+          <div class="history-item-meta">${item.sender || 'Pasangan'} &bull; ${time}</div>
         </div>
-        <button class="btn-open-tab" onclick="openLink('${safeUrl}')">Buka ↗</button>
+        <button class="btn-open-link" onclick="openLink('${safeUrl}')">Buka ↗</button>
       </div>
     `;
   }).join('');

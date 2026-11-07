@@ -2,71 +2,100 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div class="popup-container">
-    <!-- Header -->
-    <header class="header">
-      <div class="brand">
-        <img src="icons/icon32.png" alt="logo" class="logo">
-        <span class="brand-title">Sharink</span>
+    <!-- Romantic Hero Header with Fahri & Jihan Photo -->
+    <header class="couple-hero">
+      <div class="couple-avatar-wrapper">
+        <img src="couple.jpg" alt="Fahri & Jihan" class="couple-avatar">
+        <span class="heart-badge" title="Forever with love">❤️</span>
       </div>
-      <div class="header-right">
-        <span id="connectionBadge" class="badge badge-disconnected">Offline</span>
-        <button id="btnOpenOptions" class="btn-icon" title="Pengaturan">⚙️</button>
+      <div class="couple-meta">
+        <div class="couple-title">
+          <span>Fahri</span>
+          <span class="heart-pulse">❤️</span>
+          <span>Jihan</span>
+        </div>
+        <div class="connection-status-row">
+          <span class="status-indicator" id="statusDot"></span>
+          <span id="connectionBadge" class="status-label">Menghubungkan...</span>
+        </div>
       </div>
+      <button id="btnOpenOptions" class="btn-icon" title="Pengaturan Server & Perangkat">⚙️</button>
     </header>
 
-    <!-- Current Tab Section -->
-    <div class="card current-tab-card">
-      <div class="tab-info">
-        <div id="currentTabTitle" class="tab-title">Memuat info tab...</div>
-        <div id="currentTabUrl" class="tab-url">...</div>
+    <!-- Floating hearts animation container -->
+    <div id="heartsContainer" class="hearts-container"></div>
+
+    <!-- Active Tab Send Card -->
+    <section class="card active-tab-card">
+      <div class="tab-preview">
+        <div class="tab-icon-wrap">🌐</div>
+        <div class="tab-details">
+          <div id="currentTabTitle" class="tab-title">Memuat info tab...</div>
+          <div id="currentTabUrl" class="tab-url">...</div>
+        </div>
       </div>
-      <button id="btnSendCurrentTab" class="btn btn-send">
-        🚀 Kirim Tab Ini Sekarang
+      <button id="btnSendCurrentTab" class="btn btn-love-gradient">
+        <span class="btn-icon-symbol">💌</span>
+        <span class="btn-text-content">Kirim Tab ke Pasangan</span>
       </button>
       <div id="sendFeedback" class="feedback-msg"></div>
-    </div>
+    </section>
 
-    <!-- Pair Code Section -->
-    <div class="card pair-section">
-      <div class="section-header">
-        <label for="inputPairCode" class="label-title">Pair Code Perangkat</label>
-        <button id="btnRandomCode" class="btn-text">🎲 Acak</button>
+    <!-- Pair Code Bar (Compact Inline) -->
+    <section class="card compact-pair-card">
+      <div class="pair-row">
+        <span class="pair-label">🔑 Pair Code:</span>
+        <div class="pair-input-wrap">
+          <input 
+            type="text" 
+            id="inputPairCode" 
+            placeholder="FAHRI-JIHAN" 
+            spellcheck="false"
+            autocomplete="off"
+          >
+        </div>
+        <button id="btnSavePairCode" class="btn-chip" title="Simpan Pair Code">Simpan</button>
+        <button id="btnRandomCode" class="btn-chip-ghost" title="Acak Kode">🎲</button>
       </div>
-      <div class="pair-input-group">
-        <input 
-          type="text" 
-          id="inputPairCode" 
-          placeholder="Misal: WORK-PC" 
-          spellcheck="false"
-        >
-        <button id="btnSavePairCode" class="btn btn-primary">Simpan</button>
-      </div>
-      <div id="pairStatus" class="subtext">Masukkan kode yang sama di perangkat lain.</div>
-    </div>
+      <div id="pairStatus" class="subtext-pair">Kode harus sama di kedua browser.</div>
+    </section>
 
-    <!-- Quick Manual URL Dropdown / Section -->
-    <details class="manual-send-section">
-      <summary class="summary-btn">Kirim URL Lain / Manual ▾</summary>
-      <div class="manual-send-form">
-        <input type="url" id="manualUrlInput" placeholder="https://...">
-        <button id="btnSendManual" class="btn btn-secondary">Kirim Link</button>
+    <!-- Manual Send (Collapsible Compact) -->
+    <details class="manual-dropdown">
+      <summary class="dropdown-trigger">
+        <span>✍️ Kirim link manual lainnya</span>
+        <span class="chevron">▾</span>
+      </summary>
+      <div class="dropdown-content">
+        <input type="url" id="manualUrlInput" placeholder="https://..." class="input-compact">
+        <button id="btnSendManual" class="btn btn-secondary-compact">Kirim</button>
       </div>
     </details>
 
-    <!-- History Tabs -->
-    <div class="history-section">
-      <div class="history-tabs">
-        <button id="tabReceivedBtn" class="history-tab active">📥 Masuk (<span id="receivedCount">0</span>)</button>
-        <button id="tabSentBtn" class="history-tab">📤 Terkirim (<span id="sentCount">0</span>)</button>
+    <!-- History (Compact Switcher) -->
+    <section class="card history-card">
+      <div class="history-nav">
+        <button id="tabReceivedBtn" class="history-nav-btn active">
+          📥 Diterima (<span id="receivedCount">0</span>)
+        </button>
+        <button id="tabSentBtn" class="history-nav-btn">
+          📤 Terkirim (<span id="sentCount">0</span>)
+        </button>
       </div>
       <div id="historyList" class="history-list">
-        <div class="empty-state">Belum ada riwayat link.</div>
+        <div class="empty-state">Belum ada link yang diterima.</div>
       </div>
-    </div>
+    </section>
+
+    <!-- Sweet Micro Footer -->
+    <footer class="micro-footer">
+      <span>Sharink &bull; Selalu terhubung dengan cinta ✨</span>
+    </footer>
   </div>
 
   <script src="popup.js"></script>

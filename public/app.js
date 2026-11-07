@@ -1,7 +1,7 @@
 // public/app.js - Sharink Web Companion
 let ws = null;
 let pollTimer = null;
-let currentPairCode = localStorage.getItem('sharink_pair_code') || '';
+let currentPairCode = localStorage.getItem('sharink_pair_code') || 'FAHRI-JIHAN';
 let lastPollTimestamp = 0;
 let receivedLinks = [];
 
@@ -305,3 +305,4 @@ btnSend.addEventListener('click', async () => {
 if (currentPairCode) {
   joinRoom(currentPairCode);
 }
+

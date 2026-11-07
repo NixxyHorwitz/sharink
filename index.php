@@ -9,7 +9,9 @@ if (file_exists($publicIndex)) {
     $html = str_replace('src="app.js"', 'src="public/app.js"', $html);
     $html = str_replace('src="icon48.png"', 'src="public/icon48.png"', $html);
     $html = str_replace('href="icon48.png"', 'href="public/icon48.png"', $html);
+    $html = str_replace('src="couple.jpg"', 'src="public/couple.jpg"', $html);
     echo $html;
 } else {
     echo "<h1>Sharink Server</h1><p>Public directory not found.</p>";
 }
+

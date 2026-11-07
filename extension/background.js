@@ -356,3 +356,4 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
 // Start connection on service worker launch
 setupConnection();
+
