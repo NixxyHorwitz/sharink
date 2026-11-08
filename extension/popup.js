@@ -252,23 +252,37 @@ function renderHistoryItems(items) {
   historyList.innerHTML = items.slice(0, 15).map(item => {
     const time = new Date(item.timestamp || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const safeTitle = escapeHtml(item.title || item.url);
-    const safeUrl = escapeQuotes(item.url);
+    const rawUrl = item.url || '';
+    const encodedUrl = encodeURIComponent(rawUrl);
 
     return `
-      <div class="history-item">
+      <div class="history-item" data-url="${encodedUrl}" title="Klik untuk membuka link">
         <div class="history-item-content">
           <div class="history-item-title" title="${safeTitle}">${safeTitle}</div>
           <div class="history-item-meta">${item.sender || 'Pasangan'} &bull; ${time}</div>
         </div>
-        <button class="btn-open-link" onclick="openLink('${safeUrl}')">Buka ↗</button>
+        <button class="btn-open-link" data-url="${encodedUrl}">Buka ↗</button>
       </div>
     `;
   }).join('');
 }
 
-window.openLink = (url) => {
-  chrome.tabs.create({ url });
-};
+// Delegated click listener (fixes CSP inline onclick issue)
+historyList.addEventListener('click', (e) => {
+  const target = e.target.closest('[data-url]');
+  if (target) {
+    e.preventDefault();
+    e.stopPropagation();
+    const encoded = target.getAttribute('data-url');
+    if (encoded) {
+      let url = decodeURIComponent(encoded).trim();
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
+      chrome.tabs.create({ url });
+    }
+  }
+});
 
 function escapeHtml(str) {
   return String(str || '').replace(/[&<>'"]/g, tag => ({

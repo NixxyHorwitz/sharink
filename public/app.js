@@ -258,8 +258,10 @@ function renderLinks() {
   linksList.innerHTML = receivedLinks.map(link => {
     const timeStr = new Date(link.timestamp || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const safeTitle = escapeHtml(link.title || link.url);
-    const safeUrl = escapeHtml(link.url);
-    const safeSender = escapeHtml(link.sender || 'Device');
+    const rawUrl = String(link.url || '').trim();
+    const validUrl = rawUrl.startsWith('http://') || rawUrl.startsWith('https://') ? rawUrl : 'https://' + rawUrl;
+    const safeUrl = escapeHtml(validUrl);
+    const safeSender = escapeHtml(link.sender || 'Pasangan');
 
     return `
       <div class="link-item">
@@ -270,7 +272,7 @@ function renderLinks() {
         <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="link-item-url">${safeUrl}</a>
         <div class="link-item-actions">
           <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-open">Buka Link ↗</a>
-          <button class="btn btn-copy" onclick="copyLink('${escapeQuotes(link.url)}')">Salin</button>
+          <button class="btn btn-copy" onclick="copyLink('${escapeQuotes(validUrl)}')">Salin</button>
         </div>
       </div>
     `;

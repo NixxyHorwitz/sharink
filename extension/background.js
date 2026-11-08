@@ -222,6 +222,17 @@ function handleIncomingLink(linkData) {
     const notifId = 'sharink_' + (id || Date.now());
     notificationMap.set(notifId, url);
 
+    // Persist URL mapping in storage so service worker sleep does not break click actions
+    chrome.storage.local.get(['notifUrls'], (st) => {
+      const map = st.notifUrls || {};
+      map[notifId] = url;
+      const keys = Object.keys(map);
+      if (keys.length > 30) {
+        delete map[keys[0]];
+      }
+      chrome.storage.local.set({ notifUrls: map });
+    });
+
     chrome.notifications.create(notifId, {
       type: 'basic',
       iconUrl: 'icons/icon128.png',
@@ -238,33 +249,68 @@ function handleIncomingLink(linkData) {
   });
 }
 
+// Helper to sanitize URL format
+function sanitizeOpenUrl(raw) {
+  if (!raw) return null;
+  let str = String(raw).trim();
+  if (!str.startsWith('http://') && !str.startsWith('https://')) {
+    str = 'https://' + str;
+  }
+  return str;
+}
+
+// Resilient resolver for notification URLs across service worker restarts
+async function getUrlForNotification(notificationId) {
+  if (notificationMap.has(notificationId)) {
+    return notificationMap.get(notificationId);
+  }
+
+  const res = await chrome.storage.local.get(['notifUrls', 'receivedLinks']);
+  if (res.notifUrls && res.notifUrls[notificationId]) {
+    return res.notifUrls[notificationId];
+  }
+
+  if (res.receivedLinks && res.receivedLinks.length > 0) {
+    const cleanId = String(notificationId || '').replace(/^sharink_/, '');
+    const matched = res.receivedLinks.find(l => l.id === cleanId);
+    if (matched && matched.url) return matched.url;
+    return res.receivedLinks[0].url;
+  }
+
+  return null;
+}
+
 // ----------------- Notification Click Handlers -----------------
-chrome.notifications.onClicked.addListener((notificationId) => {
-  const url = notificationMap.get(notificationId);
+chrome.notifications.onClicked.addListener(async (notificationId) => {
+  const rawUrl = await getUrlForNotification(notificationId);
+  const url = sanitizeOpenUrl(rawUrl);
   if (url) {
     chrome.tabs.create({ url });
-    chrome.notifications.clear(notificationId);
-    notificationMap.delete(notificationId);
   }
+  chrome.notifications.clear(notificationId);
+  notificationMap.delete(notificationId);
 });
 
-chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
-  const url = notificationMap.get(notificationId);
-  if (!url) return;
+chrome.notifications.onButtonClicked.addListener(async (notificationId, buttonIndex) => {
+  const rawUrl = await getUrlForNotification(notificationId);
+  const url = sanitizeOpenUrl(rawUrl);
 
   if (buttonIndex === 0) {
-    // Buka tab
-    chrome.tabs.create({ url });
+    // Tombol 0: Buka Tab Sekarang
+    if (url) {
+      chrome.tabs.create({ url });
+    }
   } else if (buttonIndex === 1) {
-    // Note: in service worker, clipboard can be written via offscreen or basic notification
-    // We can open tab or dismiss
-    chrome.notifications.create({
-      type: 'basic',
-      iconUrl: 'icons/icon128.png',
-      title: 'Link Siap Dibuka',
-      message: url,
-      priority: 1
-    });
+    // Tombol 1: Salin / Info
+    if (url) {
+      chrome.notifications.create({
+        type: 'basic',
+        iconUrl: 'icons/icon128.png',
+        title: 'Link Terpilih',
+        message: url,
+        priority: 1
+      });
+    }
   }
   chrome.notifications.clear(notificationId);
   notificationMap.delete(notificationId);

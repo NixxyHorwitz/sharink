@@ -567,12 +567,15 @@ body {
   border: 1px solid #f1f5f9;
   border-radius: 6px;
   padding: 6px 8px;
-  transition: border-color 0.15s;
+  transition: all 0.15s ease;
+  cursor: pointer;
 }
 
 .history-item:hover {
   border-color: var(--pink-border);
   background: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(244, 63, 94, 0.1);
 }
 
 .history-item-content {
